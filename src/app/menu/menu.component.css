@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist&display=swap');
+
+.urbanist-regular {
+  font-family: "Urbanist", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.center {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.noto-sans-jp-mid {
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.elem {
+  color: black;
+  cursor: pointer;
+  font-size: 17px;
+  height: 70px;
+  width: 100px;
+}
+
+.active-link {
+  color: black;
+  border-bottom: 1px solid black;
+}
+
+.notifications {
+  top: 70px;
+  right: 60px;
+  z-index: 1;
+  border-radius: 10px;
+  width: 400px;
+  background-color: white;
+  position: absolute;
+}
+
+.filter-container {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s ease-in-out;
+}
+
+.filter-container.opened {
+  max-height: 500px;
+}
+
+.notification-type-container {
+  height: 44px;
+  width: 110px;
+  color: #171a1f;
+  margin-left: 3px;
+  margin-top: 3px;
+  border-radius: 10px;
+  float: left;
+  cursor: pointer;
+}
+
+.notification-type-selected-container {
+  background-color: #171a1f;
+  color: white;
+}
+
+.notification-container {
+  width: calc(100% - 30px);
+  margin-left: 15px;
+  height: 70px;
+  align-items: center;
+  display: flex;
+}
+
+.notification-user-photo {
+  height: 70px;
+  width: 70px;
+  float: left
+}
+
+.notification-data {
+  height: 70px;
+  width: 300px;
+  float: left;
+}
+
+.notification-date {
+  font-size: 14px;
+  margin-left: 5px;
+  color: gray;
+  margin-top: 2px;
+}
+
+.dot {
+  height: 5px;
+  width: 5px;
+  border-radius: 5px;
+  background-color: black;
+  /*float: left;*/
+  margin-top: 7px;
+  margin-left: 4px;
+}
+
+.notification-details {
+  height: 35px;
+  width: 300px;
+  position: relative;
+  display: flex;
+}
+
+.notification-main-data-container {
+  height: 35px;
+  width: 300px;
+  font-size: 17px;
+  position: relative;
+  display: inline-block;
+  justify-content: space-between;
+}
+
+.notification-type {
+  font-size: 15px;
+  color: gray;
+}
+
+.notification-main-data {
+  position: absolute;
+  bottom: 0;
+}
+
+.nav-bar {
+  width: 100%;
+  height: 70px;
+  background-color: #eff3f6;
+  display: flex;
+  justify-content: space-between;
+  z-index: 2;
+}
+
+.nav-bar-urls {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 450px;
+}
+
+.logo-container {
+  width: 205px;
+  height: 70px;
+  align-items: center;
+  display: flex;
+  margin-left: 20px;
+  font-size: 50px;
+  position: relative;
+  user-select: none;
+}
+
+.logo-detail {
+  width: 13px;
+  height: 13px;
+  border-radius: 15px;
+  background-color: #7ed511;
+  position: absolute;
+  left: 13px;
+  top: 29px;
+}
+
+.notifications-header {
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  height: 50px;
+  align-items: center;
+  display: flex;
+  font-size: 23px;
+  justify-content: space-between;
+}
+
+.notifications-amount {
+  background-color: orange;
+  height: 15px;
+  width: 22px;
+  border-radius: 10px;
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  color: white;
+  font-size: 13px;
+}
+
+.notification-types {
+  height: 50px;
+  width: 342px;
+  background-color: #ebeff5;
+  border-radius: 10px;
+  display: flex;
+}
+
+.notification-types-container {
+  width: calc(100% - 50px);
+  margin-left: 25px;
+  height: 50px;
+  align-items: center;
+  display: flex;
+  font-size: 19px;
+}
+
+.notification-button {
+  width: 55px;
+  height: 55px;
+  float: right;
+  cursor: pointer;
+}
+
+.nav-bar-right-side {
+  width: 125px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.user-profile-container {
+  width: 70px;
+  height: 60px;
+  float: right;
+}
+
+.user-profile {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.notification-list {
+  width: 100%;
+  max-height: 400px;
+  overflow-y: scroll;
+  margin-bottom: 5px;
+}
+
+.example::-webkit-scrollbar {
+  display: none;
+}
+
+.example {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.round-100 {
+  border-radius: 100px;
+}
+
+.remove-notification {
+  float: right;
+  cursor: pointer;
+  display: none;
+}
+
+.notification-container:hover .remove-notification {
+  display: flex;
+}

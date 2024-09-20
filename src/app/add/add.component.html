@@ -1,0 +1,282 @@
+<app-menu (dataUsersEmitter)="receiveNotifications($event)"></app-menu>
+<div id="main">
+
+  <div id="page-container">
+    <div id="main-image-container">
+      <img src="../../assets/img/friends-banner.png" class="radius-25">
+      <div class="statuses-container urbanist-regular">
+        <div class="status-container">
+          <div class="status-pending">Pending</div>
+          <div class="status-value">{{ pending }}</div>
+        </div>
+        <div class="status-container">
+          <div class="status-to-accept">To Accept</div>
+          <div class="status-value">{{ toAccept }}</div>
+        </div>
+      </div>
+      <div class="urbanist-regular friends">
+
+        <div *ngFor="let friendId of friendsIds.slice(0, 3); let i = index">
+          <div class="center circle circle-{{4 - i}}">
+            <img [src]="userPhotos.get(friendId)" height="60px" class="radius-100">
+          </div>
+        </div>
+        <div *ngIf="friendsIds.length > 3" class="center circle circle-1">
+          +{{friendsIds.length - 3}}
+        </div>
+
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="filter-container countries-filter" [ngClass]="{ opened: countries }">
+        <ng-container *ngFor="let country of countriesVal; let i = last">
+          <div class="urbanist-regular country-filter" [style.border-bottom]="i ? '' : '1px solid #f9f9f9'" [class.active-filter]="Array.from(countriesSearch.keys()).includes(country)" (click)="selectCountry(country)">
+            {{ country | titlecase }}
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="filter-container interests-filter" [ngClass]="{ opened: interests }">
+        <ng-container *ngFor="let interest of interestsVal; let i = last">
+          <div class="urbanist-regular interest-filter" [style.border-bottom]="i ? '' : '1px solid #f9f9f9'" [class.active-filter]="Array.from(interestsSearch.keys()).includes(interest)" (click)="selectInterest(interest)">
+            {{ interest | titlecase }}
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="filter-interests urbanist-regular" [class.filter-active]="interests" (click)="interests = !interests">
+        Interests
+        <img src="assets/img/icon-expand-arrow-black.png" height="10px" *ngIf="!interests">
+        <img src="assets/img/icon-collapse-arrow-white.png" height="10px" *ngIf="interests">
+      </div>
+      <div class="filter-countries urbanist-regular" [class.filter-active]="countries" (click)="countries = !countries">
+        Countries
+        <img src="assets/img/icon-expand-arrow-black.png" height="10px" *ngIf="!countries">
+        <img src="assets/img/icon-collapse-arrow-white.png" height="10px" *ngIf="countries">
+      </div>
+
+      <div class="age-container urbanist-regular">
+        <div class="age-container-header">
+          Age
+        </div>
+        <div class="age-main-container">
+          <div class="age-min-value center">
+            {{ minValue }}
+          </div>
+          <div class="slider-container">
+            <div class="slider">
+              <div class="progress" [ngStyle]="{'left.%': leftPercentage, 'right.%': rightPercentage}"></div>
+            </div>
+            <div class="range-input">
+              <input type="range" class="range-min" [value]="minValue" [min]="minRange" [max]="maxRange" (input)="updateMinRange($event)">
+              <input type="range" id="range-max" #rangeMax class="range-max" [value]="maxValue" [max]="maxRange" min="0" max="1000" (input)="updateMaxRange($event)">
+            </div>
+          </div>
+          <div class="age-max-value center">
+            {{ maxValue }}
+          </div>
+        </div>
+      </div>
+
+
+      <div class="user-filters urbanist-regular">
+        <div class="all-users-filter center" [class.active-users-filter]="activeFilters.includes('ALL')" (click)="selectUsers('ALL')">
+          All
+        </div>
+        <div class="users-filter center" [class.active-users-filter]="activeFilters.includes('ONLINE')" (click)="selectUsers('ONLINE')">
+          <div class="green-small-dot"></div>
+          Online ({{ onlineUsers }})
+        </div>
+        <div class="users-filter center" [class.active-users-filter]="activeFilters.includes('FRIENDS')" (click)="selectUsers('FRIENDS')">
+          Friends
+        </div>
+      </div>
+
+      <div class="group-container-outer">
+
+        <div class="urbanist-regular stat-container">
+          <div class="stat-header">
+            Avg age
+          </div>
+          <div class="progress-bar-container">
+            <div role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="256" id="avgAge" #avgAge
+                 style="--value: 56"></div>
+          </div>
+          <div class="min-age">
+            0
+          </div>
+          <div class="max-age">
+            99
+          </div>
+          <div class="avg-age nunito-sans-bold">
+            {{ avgAgeVal || 'X' }}
+          </div>
+        </div>
+
+
+        <div class="stat-container urbanist-regular">
+          <div class="stat-header">
+            Interests
+          </div>
+          <div class="stat-interest" *ngFor="let interest of interests2 | slice:0:6; let i=first">
+            {{ interest.value | titlecase }}
+            <div class="stat-progress-bar-outer">
+              <div class="stat-progress-bar-inner" [style.background-color]="i ? 'black' : '#1d2635'" [style.width]="(interest.percentage/100)*120+'px'"></div>
+            </div>
+            {{ interest.percentage | number: '1.2-2' }}%
+          </div>
+        </div>
+
+        <div class="group-container-inner">
+          <div class="group-header urbanist-regular">
+          Group
+            <input type="file" style="display: none" id="group_photo" name="file" (change)="onFileSelected($event)" ngModel/>
+            <label for="group_photo" style="cursor: pointer" *ngIf="file === null">
+              <img src="assets/img/icon-photo.png" height="20px">
+            </label>
+            <img src="assets/img/icon-check.png" height="20px" *ngIf="file !== null">
+          </div>
+
+          <input type="text" placeholder="Name..." [(ngModel)]="groupName" class="urbanist-regular custom-input">
+          <div class="urbanist-regular group-users-container">
+
+            <div class="urbanist-regular group-user-container" *ngFor="let user of groupUsers; let i = last">
+             <div [style.border-bottom]="i ? '' : '1px solid #464656'" class="urbanist-regular group-user">
+                <div class="group-user-details">
+                  <img [src]="userPhotos.get(user.user_id)" height="50px" class="group-user-photo">
+                  {{ user.first_name }} {{ user.last_name }}
+                </div>
+                <div>
+                 <img src="../../assets/img/icon-dots.png" width="20px">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="center create-button-outer">
+          <div class="center create-button-inner urbanist-regular" (click)="createChat()">
+            CREATE
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="users-container example">
+      <ng-container *ngFor="let user of users2 | search: searchText">
+
+        <div class="user-container" [hidden]="!users.includes(user)">
+          <div class="user-background" [style.background-color]="user.bgColor">
+            <div class="user-photo-container center">
+              <img [src]="userPhotos.get(user.user_id)" height="120px">
+            </div>
+            <div [style.background-color]="'whitesmoke'" class="user-status-outer center"></div>
+            <div
+              class="user-status status-online center urbanist-regular" *ngIf="user.activityStatus == 'ONLINE'">
+              <div class="user-status-value"></div>
+              Online
+            </div>
+
+            <div
+              class="user-status status-offline center urbanist-regular" *ngIf="user.activityStatus == 'OFFLINE'">
+              <div class="user-status-value"></div>
+              Offline
+            </div>
+          </div>
+          <div class="user-data">
+            <div class="name urbanist-regular">
+              {{ user.first_name }} {{ user.last_name }}
+              <img src="../../assets/img/icon-menu-vertical.png" height="25px" style="cursor: pointer">
+            </div>
+            <div class="domicile urbanist-regular">
+              <img src="assets/img/icon-location.png" width="15px" height="15px"> {{ user.country }}, {{ user.city }}
+            </div>
+
+            <hr class="user-line">
+            <div class="user-details urbanist-regular">
+              <div class="user-detail">
+                <div class="user-detail-key">
+                  Friends
+                </div>
+                <div class="user-detail-value-container">
+                  <span class="user-detail-value">{{ user.friends }}</span>
+                  <span class="user-detail-mutual" *ngIf="user.mutualFriends > 0"> ({{ user.mutualFriends }} Mutual)</span>
+                </div>
+              </div>
+              <div class="user-detail">
+                <div class="user-detail-key">
+                  Groups
+                </div>
+                <div class="user-detail-value-container">
+                  <span class="user-detail-value">{{ user.groups }}</span>
+                  <span class="user-detail-mutual" *ngIf="user.mutualGroups > 0"> ({{ user.mutualGroups }}Mutual)</span>
+                </div>
+              </div>
+              <div class="user-detail">
+                <div class="user-detail-key">
+                  Joined
+                </div>
+                <div class="user-detail-value-container">
+                  {{ user.joined | date:'mediumDate' }}
+                </div>
+              </div>
+            </div>
+            <div class="urbanist-regular user-interests">
+              <ng-container *ngFor="let interest of user.interests">
+                {{ interest | titlecase }},
+              </ng-container>
+            </div>
+            <div class="user-actions">
+              <ng-container *ngIf="user.status == null">
+                <div (click)="createFriendRequest(user.user_id)"
+                  class="center urbanist-regular add-button">
+                  <img src="../../assets/img/icon-add-user-white.png" height="18px" class="add-icon">Add
+                </div>
+
+              </ng-container>
+
+              <ng-container *ngIf="user.status == 'TO_ACCEPT'">
+                <div
+                  (click)="acceptFriendRequest(user.user_id)"
+                  class="center urbanist-regular accept-button">
+                  <img src="../../assets/img/icon-double-check.png" width="30px">
+                  <span style="font-size: 15px; margin-left: 5px; color: #2E78F3">Accept</span>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="user.status == 'PENDING'">
+                <div class="invited-button center urbanist-regular">
+                  <img src="assets/img/icon-check.png" width="25px">
+                  <span style="font-size: 15px; margin-left: 5px">Invited</span>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="user.status == 'ACCEPTED'">
+                <div (click)="removeFriend(user.user_id)" class="remove-friend-button center urbanist-regular">
+                  <img src="../../assets/img/icon-unfriend.png" width="20px">
+                  <span class="remove-friend">Remove</span>
+                </div>
+
+                <div (click)="openChat(user.user_id)" class="open-chat-button center urbanist-regular">
+                  <img src="../../assets/img/icon-letter-white.png" height="18px" class="open-chat">Send Message
+                </div>
+
+                <div class="remove-user-group center urbanist-regular" (click)="removeUserFromGroup(user)" *ngIf="groupUsers.includes(user)">
+                    <img src="assets/img/icon-minus.png" height="15px">
+                </div>
+
+                <div class="center urbanist-regular add-user-group" (click)="addUserToGroup(user)" *ngIf="!groupUsers.includes(user)">
+                    <img src="../../assets/img/icon-plus-bold.png" height="15px">
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+  </div>
+</div>

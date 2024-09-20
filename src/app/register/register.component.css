@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@600&display=swap');
+
+#main {
+  position: relative;
+  width: 400px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.roboto-regular {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.noto-sans-jp-bold {
+  font-family: "Noto Sans JP", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.urbanist-regular {
+  font-family: "Urbanist", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.centerHorizontally {
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.hideText {
+  -webkit-text-security: disc;
+}
+
+button {
+  color: white;
+  background-color: black;
+  line-height: 1.5rem;
+  width: 100%;
+  border-radius: 15px;
+  height: 40px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.inputContainer {
+  height: 70px;
+  margin-bottom: 10px;
+}
+
+#signIn {
+  font-weight: 600;
+  color: black;
+  cursor: pointer;
+}
+
+.header {
+  margin-bottom: 30px;
+  width: 100%;
+  height: 70px;
+}
+
+.reg {
+  border: 2px solid #f1f1f1;
+  height: 40px;
+  padding-left: 10px;
+  font-size: 17px;
+}
+
+.reg2 {
+  border: 2px solid #f1f1f1;
+  height: 40px;
+  font-size: 17px;
+  width: 190px;
+}
+
+.inputs-container {
+  width: 415px;
+  justify-content: space-between;
+  display: flex;
+}
+
+.small-inputContainer {
+  height: 80px;
+  width: 198px;
+  float: left;
+}
+
+.inputContainer label {
+  font-weight: 500;
+}
+
+.photo {
+  display: flex;
+  /*justify-content: center;*/
+  width: 100%;
+  height: 30px;
+  font-size: 18px;
+  align-items: center;
+  margin-bottom: 7px;
+  /*cursor: pointer;*/
+}
+
+.input-header {
+  margin-bottom: 7px;
+}
+
+.logo {
+  width: 50%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  float: left;
+}
+
+.header-title {
+  width: 100%;
+  font-size: 25px;
+}
+
+.header-sub-title {
+  width: 100%;
+  font-size: 15px;
+  color: gray;
+  margin-top: 10px;
+}
+
+.form-outer {
+  width: 50%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  float: left;
+}

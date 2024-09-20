@@ -1,0 +1,72 @@
+<div class="logo">
+  <img src="../../assets/img/logo-1.svg" width="400px" height="400px">
+</div>
+<div class="form-outer">
+  <div id="main">
+    <form [formGroup]="form" (submit)="submit()">
+      <div class="header centerHorizontally">
+        <div class="noto-sans-jp-bold header-title">Welcome to Chat App!</div>
+        <div class="header-sub-title">Create an account</div>
+      </div>
+
+      <div class="inputContainer urbanist-regular">
+        <div class="input-header"><label for="username">Username</label></div>
+        <input formControlName="userName" type="text" id="username" class="reg roboto-regular">
+      </div>
+
+      <div class="inputContainer urbanist-regular">
+        <div class="input-header"><label for="firstName">First Name</label></div>
+        <input formControlName="firstName" type="text" id="firstName" class="reg roboto-regular">
+      </div>
+
+      <div class="inputContainer urbanist-regular">
+        <div class="input-header"><label for="lastName">Last Name</label></div>
+        <input formControlName="lastName" type="text" id="lastName" class="reg roboto-regular">
+      </div>
+
+      <div class="inputContainer urbanist-regular" *ngIf="file===null">
+        <div class="input-header"><label for="password">Password</label></div>
+        <input formControlName="password" type="text" id="password" class="reg roboto-regular">
+      </div>
+
+      <div class="inputs-container">
+        <div class="small-inputContainer urbanist-regular">
+          <div class="input-header"><label for="country">Country</label></div>
+          <input formControlName="country" type="text" id="country" class="reg2 roboto-regular">
+        </div>
+
+        <div class="small-inputContainer urbanist-regular">
+          <div class="input-header"><label for="city">City</label></div>
+          <input formControlName="city" type="text" id="city" class="reg2 roboto-regular">
+        </div>
+      </div>
+
+      <div class="photo urbanist-regular">
+        <ng-container *ngIf="file === null">
+          <input type="file" style="display: none" id="user_photo" name="file" (change)="onFileSelected($event)" ngModel/>
+          <label for="user_photo" style="cursor: pointer">
+            Upload Photo
+            <img src="assets/img/icon-user-photo.png" height="20px">
+          </label>
+        </ng-container>
+        <ng-container *ngIf="file !== null">
+          User Photo Uploaded
+            <img src="assets/img/icon-check.png" height="20px" style="margin-left: 5px">
+        </ng-container>
+
+      </div>
+
+      <button>Sign up</button>
+    </form>
+
+    <br>
+    <div class="centerHorizontally">
+    <span class="centerHorizontally">
+      Already have an account?
+      <span id="signIn" routerLink="/sign-in">
+        Sign in
+      </span>
+    </span>
+    </div>
+  </div>
+</div>

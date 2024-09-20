@@ -1,0 +1,201 @@
+<app-menu [bgColor2]="bgColor"></app-menu>
+<div class="page">
+  <div class="page-header">
+    <span class="urbanist-regular greeting">Hello, {{ personalData.firstName }} {{ personalData.lastName }}!</span>
+    <span class="urbanist-regular last-login-header">Last login:</span>
+    <span class="urbanist-regular last-login-value">--.--.---- --:-- AM/PM</span>
+  </div>
+
+  <div class="page2">
+    <div class="main-image-container center">
+      <img src="../../assets/img/mountains-banner.png" class="main-image">
+      <div class="urbanist-regular unread-messages">
+        <span class="nunito-sans-bold">{{ personalData.unreadMessages }}</span> Unread Messages
+      </div>
+      <div class="personal-data urbanist-regular">
+        <div class="personal-data-column">
+          <div class="personal-data-key">Name</div>
+          <div class="personal-data-value">{{ personalData.firstName }} {{ personalData.lastName }}</div>
+        </div>
+        <div class="personal-data-column">
+          <div class="personal-data-key">Email</div>
+          <div class="personal-data-value">{{ personalData.email }}</div>
+        </div>
+        <div class="personal-data-column">
+          <div class="personal-data-key">Address</div>
+          <div class="personal-data-value">{{ personalData.country }}, {{ personalData.city }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="stats-top">
+      <div class="user-interests">
+        <div class="urbanist-regular stat-header">
+          Interests
+        </div>
+        <ng-container *ngFor="let interest of interests">
+          <div class="interest-container urbanist-regular">
+            <div class="interest-delete"><img src="assets/img/icon-x.png" width="17px" (click)="deleteInterest(interest.id)"></div>
+            <div class="interest-value">{{ interest.value | titlecase }}</div>
+          </div>
+        </ng-container>
+        <div class="urbanist-regular interest-create-container">
+          <div class="interest-create-button"><img src="../../assets/img/icon-plus-white-thin.png" width="17px" (click)="addInterest()">
+          </div>
+          <input type="text" placeholder="New" [(ngModel)]="interestAdd" class="urbanist-regular interest-create-input">
+        </div>
+      </div>
+
+      <div class="friends-interests">
+        <div class="urbanist-regular stat-header">
+          Interests Among Friends
+        </div>
+        <ng-container *ngFor="let interest of userInterests; let first1 = first; let last2 = last">
+          <div [ngClass]="{ 'first': first1, 'last': last2 }" class="urbanist-regular interest-container">
+            <div class="interest-percentage">{{ interest.percentage | number:'1.2-2' }}%</div>
+            <div class="interest-value">{{ interest.value | titlecase }}</div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="stat-chart">
+        <div class="urbanist-regular stat-header">
+          Sent Messages
+        </div>
+        <div class="center chart">
+          <canvas id="myChart2" #myChart2></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="stats-bottom">
+      <div class="online-friends urbanist-regular">
+        <div class="urbanist-regular small-stat-header">
+          Online friends
+        </div>
+        <div class="progress-bar-container">
+          <div role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="256" style="--value: 0" #onlineFriendss></div>
+        </div>
+        <div class="progress-bar-min">
+          0
+        </div>
+        <div class="progress-bar-max">
+          {{ friendsOnline.friends }}
+        </div>
+        <div
+          class="nunito-sans-bold progress-bar-value">
+          {{ friendsOnline.onlineFriends }}
+        </div>
+      </div>
+      <div class="users">
+        <div class="urbanist-regular stats-filter">
+          <div [class.active-filter]="!newUsers" (click)="newUsers = false"
+            class="center stat-filter">
+            Mutual Friends
+          </div>
+          <div [class.active-filter]="newUsers" (click)="newUsers = true"
+            class="center stat-filter">
+            New Users
+          </div>
+        </div>
+        <div class="users-container">
+          <div class="carousel-button">
+            <img src="assets/img/icon-arrow-left.png" height="35px" (click)="prev()">
+          </div>
+
+            <div class="carousel">
+
+              <div class="carousel-list" [hidden]="newUsers">
+                <ng-container *ngFor="let item of newUser; let i = index">
+
+                  <div class="carousel-item" [hidden]="i < currentIndex || i >= currentIndex + visibleItemsCount">
+                    <div class="user-status-container urbanist-regular">
+                      <img src="../../assets/img/icon-plus-blue.png" height="20px" class="user-status" (click)="createFriendRequest(item.id)" *ngIf="item.friendStatus == null">
+                      <img src="assets/img/icon-check.png" height="20px" class="user-status" *ngIf="item.friendStatus == 'PENDING'">
+                      <img src="../../assets/img/icon-double-check.png" height="20px" class="user-status" (click)="acceptFriendRequest(item.id)" *ngIf="item.friendStatus == 'TO_ACCEPT'">
+                      <img src="assets/img/icon-friends.png" height="20px" class="user-status" *ngIf="item.friendStatus == 'ACCEPTED'">
+                    </div>
+                    <div class="user-photo-container">
+                      <img [id]="item.id" width="70px" class="user-photo">
+                    </div>
+                    <div class="urbanist-regular user-name">
+                      {{ item.firstName }} {{ item.lastName }}
+                    </div>
+                    <div class="urbanist-regular user-detail">
+                      {{ item.mutualFriends }}
+                    </div>
+                  </div>
+
+                </ng-container>
+
+              </div>
+
+              <div class="carousel-list" [hidden]="!newUsers">
+
+                <ng-container *ngFor="let item of mutualFriends; let i = index">
+
+                <div class="carousel-item" [hidden]="i < currentIndex || i >= currentIndex + visibleItemsCount">
+                  <div class="user-status-container urbanist-regular">
+                    <img src="../../assets/img/icon-plus-blue.png" height="20px" class="user-status" (click)="createFriendRequest(item.id)" *ngIf="item.friendStatus == null">
+                    <img src="assets/img/icon-check.png" height="20px" class="user-status" *ngIf="item.friendStatus == 'PENDING'">
+                    <img src="../../assets/img/icon-double-check.png" height="20px" class="user-status" (click)="acceptFriendRequest(item.id)" *ngIf="item.friendStatus == 'TO_ACCEPT'">
+                    <img src="assets/img/icon-friends.png" height="20px" class="user-status" *ngIf="item.friendStatus == 'ACCEPTED'">
+                  </div>
+                  <div style="height: 70px; width: 100%">
+                    <img [id]="item.id" width="70px" class="user-photo">
+                  </div>
+                  <div class="urbanist-regular user-name">
+                    {{ item.firstName }} {{ item.lastName }}
+                  </div>
+                  <div class="urbanist-regular user-detail">
+                    {{ item.created | dateTimeDisplay }}
+                  </div>
+                </div>
+
+                </ng-container>
+
+              </div>
+
+            </div>
+
+          <div class="carousel-button">
+            <img src="../../assets/img/icon-arrow-right-black.png" height="35px" (click)="next()">
+          </div>
+
+        </div>
+      </div>
+      <div class="countries-chart">
+        <div id="regions_div"></div>
+      </div>
+      <div class="user-settings">
+        <div class="bg-color-container">
+          <div class="urbanist-regular bg-color-header">
+            Select background color
+          </div>
+          <div class="colors">
+            <div class="color-picker color-1" [class.color-selected]="bgColor === '#367b6f'" (click)="changeColor('#367b6f')"></div>
+            <div class="color-picker color-2" [class.color-selected]="bgColor === '#765bc3'" (click)="changeColor('#765bc3')"></div>
+            <div class="color-picker color-3" [class.color-selected]="bgColor === '#ffee63'" (click)="changeColor('#ffee63')"></div>
+            <div class="color-picker color-4" [class.color-selected]="bgColor === '#748ca6'" (click)="changeColor('#748ca6')"></div>
+            <div class="color-picker color-5" [class.color-selected]="bgColor === '#fac113'" (click)="changeColor('#fac113')"></div>
+            <div class="color-picker color-6" [class.color-selected]="bgColor === '#2f8f9c'" (click)="changeColor('#2f8f9c')"></div>
+            <div class="color-picker color-7" [class.color-selected]="bgColor === '#aac8fe'" (click)="changeColor('#aac8fe')"></div>
+          </div>
+        </div>
+
+        <div class="urbanist-regular user-settings-photo">
+          <img id="profilePicture" width="60px" class="settings-profile-photo">
+          <input type="file" style="display: none" id="user_photo" name="file" (change)="onFileSelected($event)" ngModel/>
+          <label for="user_photo" style="cursor: pointer" class="profile-photo-header center" *ngIf="file === null">
+            Change profile photo
+          </label>
+        </div>
+
+        <div class="logout-container urbanist-regular">
+          <span (click)="logout()">Logout</span>
+          <span (click)="logoutAll()">Logout from all devices</span>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+

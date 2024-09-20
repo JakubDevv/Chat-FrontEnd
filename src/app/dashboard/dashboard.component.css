@@ -1,0 +1,642 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,1000&display=swap');
+
+.roboto-regular {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.nunito-sans-bold {
+  font-family: "Nunito Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 1000;
+  font-style: normal;
+  font-variation-settings: "wdth" 100,
+  "YTLC" 500;
+}
+
+.urbanist-regular {
+  font-family: "Urbanist", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.center {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+[role="progressbar"] {
+  --percentage: var(--value);
+  --primary: #369;
+  --secondary: #adf;
+  --size: 250px;
+  animation: progress 2s 0.5s forwards;
+  width: var(--size);
+  aspect-ratio: 2/1;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+[role="progressbar"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(from 0.75turn at 50% 100%, var(--primary) calc(var(--percentage) * 1% / 2), var(--secondary) calc(var(--percentage) * 1% / 2 + 0.1%));
+  mask: radial-gradient(at 50% 100%, white 55%, transparent 0);
+  mask-mode: alpha;
+  overflow: hidden;
+  border-radius: 50% / 100% 100% 0 0;
+  -webkit-mask: radial-gradient(at 50% 100%, #0000 55%, #000 55.5%);
+  -webkit-mask-mode: alpha;
+}
+
+.tab {
+  background-color: #ececec;
+  height: 30px;
+  border-radius: 20px;
+  float: left;
+  margin-right: 10px;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 25px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 17px;
+  width: 17px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+.carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel {
+  width: 500px;
+  height: 160px;
+  float: left;
+  display: flex;
+  justify-content: space-between;
+}
+
+.carousel-item {
+  width: 125px;
+  height: 150px;
+  float: left;
+}
+
+.page {
+  width: 100%;
+  height: 1600px;
+  background-color: #eff3f6;
+}
+
+.progress-bar-max {
+  position: absolute;
+  top: 180px;
+  right: 21px;
+  width: 25px;
+  height: 20px;
+  text-align: center;
+}
+
+.progress-bar-value {
+  position: absolute;
+  top: 90px;
+  right: 80px;
+  width: 130px;
+  height: 80px;
+  text-align: center;
+  font-size: 70px;
+}
+
+.progress-bar-min {
+  position: absolute;
+  top: 180px;
+  left: 28px;
+}
+
+.progress-bar-container {
+  width: 250px;
+  height: 125px;
+  float: left;
+  margin-left: 20px;
+}
+
+.stat-header {
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  height: 40px;
+  font-size: 23px;
+  align-items: center;
+  display: flex;
+}
+
+.small-stat-header {
+  width: calc(100% - 10px);
+  height: 50px;
+  align-items: center;
+  display: flex;
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+.interest-value {
+  position: absolute;
+  bottom: 4px;
+  left: 8px;
+}
+
+.interest-delete {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  cursor: pointer;
+}
+
+.interest-container {
+  background-color: #eff3f6;
+  width: 120px;
+  height: 80px;
+  border-radius: 20px;
+  margin: 5px;
+  float: left;
+  position: relative;
+  font-size: 22px;
+}
+
+.interest-create-container {
+  background-color: #202020;
+  width: 120px;
+  height: 80px;
+  border-radius: 20px;
+  margin: 5px;
+  float: left;
+  position: relative;
+  font-size: 22px;
+  color: white;
+}
+
+.interest-create-button {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  cursor: pointer;
+}
+
+.interest-create-input {
+  position: absolute;
+  bottom: 4px;
+  left: 12px;
+  border: none;
+  border-bottom: 1px solid white;
+  background-color: #202020;
+  height: 30px;
+  width: 70px;
+  color: white;
+  font-size: 22px;
+}
+
+.stat-chart {
+  width: 720px;
+  background-color: white;
+  height: 375px;
+  float: left;
+  margin-left: 20px;
+  border-radius: 20px;
+}
+
+.chart {
+  width: 720px;
+  height: 330px;
+}
+
+.color-picker {
+  width: 20px;
+  height: 20px;
+  border-radius: 7px;
+  margin-right: 7px;
+  cursor: pointer;
+}
+
+.color-selected {
+  border: 2px solid black;
+}
+
+.color-1 {
+  background-color: #367b6f;
+}
+
+.color-2 {
+  background-color: #765bc3;
+}
+
+.color-3 {
+  background-color: #ffee63;
+}
+
+.color-4 {
+  background-color: #748ca6;
+}
+
+.color-5 {
+  background-color: #fac113;
+}
+
+.color-6 {
+  background-color: #2f8f9c;
+}
+
+.color-7 {
+  background-color: #aac8fe;
+}
+
+.colors {
+  height: 30px;
+  width: 100%;
+  align-items: center;
+  display: flex;
+}
+
+.countries-chart {
+  width: 450px;
+  height: 220px;
+  float: left;
+  margin-left: 20px;
+}
+
+.user-status {
+  float: right;
+  cursor: pointer;
+}
+
+.stat-filter {
+  width: 130px;
+  height: 26px;
+  margin-top: 2px;
+  margin-left: 2px;
+  border-radius: 10px;
+  font-size: 15px;
+  float: left;
+}
+
+.active-filter {
+  background-color: white;
+}
+
+.interest-percentage {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  font-size: 17px
+}
+
+.friends-interests {
+  width: 520px;
+  height: 375px;
+  background-color: white;
+  border-radius: 15px;
+  float: left;
+  margin-left: 20px;
+}
+
+.user-interests {
+  width: 520px;
+  height: 375px;
+  background-color: white;
+  border-radius: 15px;
+  float: left;
+}
+
+.stats-top {
+  height: 375px;
+  width: 1800px;
+  margin-left: 40px;
+  margin-top: 30px;
+  border-radius: 20px;
+}
+
+.stats-bottom {
+  height: 220px;
+  width: calc(100% - 20px);
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.personal-data {
+  width: 300px;
+  position: absolute;
+  top: 620px;
+  right: 70px;
+}
+
+.personal-data-column {
+  width: 100%;
+  height: 40px;
+  border-bottom: 1px solid #392f30;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.personal-data-key {
+  color: gray;
+  font-size: 17px;
+}
+
+.personal-data-value {
+  color: white;
+  font-size: 20px;
+}
+
+.online-friends {
+  width: 290px;
+  height: 220px;
+  background-color: white;
+  border-radius: 15px;
+  float: left;
+  margin-left: 20px;
+  position: relative;
+}
+
+.user-settings {
+  width: 400px;
+  height: 220px;
+  float: left;
+  margin-left: 20px;
+  border-radius: 20px;
+}
+
+.bg-color-header {
+  height: 30px;
+  width: 100%;
+  align-items: center;
+  display: flex;
+  font-size: 20px;
+}
+
+.bg-color-container {
+  width: 390px;
+  height: 66px;
+  background-color: white;
+  float: left;
+  border-radius: 20px;
+  padding-left: 10px;
+}
+
+.user-settings-photo {
+  width: 390px;
+  height: 65px;
+  background-color: white;
+  float: left;
+  border-radius: 20px;
+  margin-top: 20px;
+  padding-right: 10px;
+  font-size: 20px;
+}
+
+.profile-photo-header {
+  height: 65px;
+  font-size: 23px;
+  cursor: pointer;
+  width: 225px;
+}
+
+.settings-profile-photo {
+  border-radius: 30px;
+  float: left;
+  margin-left: 2px;
+  margin-top: 2px;
+}
+
+.logout-container {
+  width: 380px;
+  height: 50px;
+  background-color: white;
+  float: left;
+  border-radius: 20px;
+  padding-left: 10px;
+  margin-top: 20px;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 10px;
+  font-size: 20px;
+  user-select: none;
+}
+
+.logout-container span {
+  cursor: pointer;
+}
+
+#regions_div {
+  height: 220px;
+}
+
+.carousel-button {
+  width: 40px;
+  height: 160px;
+  align-items: center;
+  display: flex;
+  float: left;
+  justify-content: center;
+}
+
+.carousel-button img {
+  cursor: pointer;
+}
+
+.user-status-container {
+  width: 100%;
+  height: 20px;
+}
+
+.user-name {
+  width: 100%;
+  height: 20px;
+  justify-content: center;
+  display: flex;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.user-detail {
+  width: 100%;
+  height: 20px;
+  justify-content: center;
+  display: flex;
+  color: gray;
+}
+
+.user-photo {
+  border-radius: 35px;
+  margin-left: 25px;
+}
+
+.users-container {
+  height: 160px;
+  margin-top: 10px;
+  width: 580px;
+  margin-left: 10px;
+}
+
+.stats-filter {
+  width: 264px;
+  height: 30px;
+  background-color: whitesmoke;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.users {
+  width: 600px;
+  height: 220px;
+  background-color: white;
+  float: left;
+  margin-left: 20px;
+  border-radius: 20px;
+}
+
+.unread-messages {
+  width: 300px;
+  position: absolute;
+  top: 720px;
+  left: 60px;
+  height: 50px;
+  color: white;
+  font-size: 24px;
+}
+
+.main-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1800px;
+  height: auto;
+}
+
+.main-image-container {
+  width: 1800px;
+  height: 800px;
+  background-color: #0c113b;
+  border-radius: 20px;
+  margin-left: 40px;
+  overflow: hidden;
+  position: relative;
+}
+
+.page2 {
+  width: 1880px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.last-login-value {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+}
+
+.last-login-header {
+  position: absolute;
+  top: 30px;
+  right: 88px;
+  color: grey;
+}
+
+.greeting {
+  position: absolute;
+  top: 30px;
+  left: 20px;
+  font-size: 50px;
+}
+
+.page-header {
+  width: 100%;
+  height: 100px;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.user-photo-container {
+  height: 70px;
+  width: 100%;
+}
+
+.first {
+  background-color: gold;
+}
+
+.last {
+  background-color: #202020;
+  color: white;
+}

@@ -1,0 +1,762 @@
+<app-menu (dataGroupEmitter)="receiveNotifications($event)"></app-menu>
+<div class="left-div">
+  <div class="online-users-header">
+    <div class="poppins-low online-users-title">
+      Online
+    </div>
+    <div class="center poppins-low online-users">
+      <span *ngIf="activeFriends.length > 0">{{ activeFriends.length }}</span>
+    </div>
+    <div class="urbanist-regular online-users-more">
+      More
+      <img src="../../assets/img/icon-arrow-right-grey.png" height="15px">
+    </div>
+  </div>
+  <div class="online-users-container" *ngIf="activeFriends.length > 0">
+    <div class="online-user" *ngFor="let friend of activeFriends" (click)="selectChatByUserId(friend.id)">
+      <div class="online-user-photo-container">
+        <div class="online-user-background" [style.background-color]="friend.bgColor">
+          <img [src]="userPhotos.get(friend.id)" width="55px" height="55px" class="round-100">
+        </div>
+        <div class="online-user-dot"></div>
+      </div>
+      <div class="online-user-first-name urbanist-regular">
+        {{ friend.firstName }}
+      </div>
+    </div>
+  </div>
+  <div class="chats-header">
+    <div class="poppins-low chats-header-title">
+      Messages
+    </div>
+    <div class="center new-messages" *ngIf="all_unread_messages > 0">
+      {{ all_unread_messages }}
+    </div>
+  </div>
+  <div class="chats-list">
+
+    <ng-container *ngFor="let chat of chats">
+      <div class="chat-column" [class.selected-chat]="selectedChat == chat.id" (click)="selectChat(chat.id)">
+        <div class="chat-photo-container" [style.background-color]="chat.bgColor">
+          <img [id]="'chat' + chat.id" width="55px" height="55px" class="round-100">
+          <div class="chat-online-status" *ngIf="chat.activeUsers > 0"></div>
+        </div>
+        <div class="chat-main-data">
+          <div class="open-sans-regular chat-name">
+            {{ chat.chatName }}
+          </div>
+          <div class="urbanist-regular chat-last-message-time" [class.bold]="chat.unread_messages > 0">
+            {{ chat.lastMessageTime | dateTimeDisplay }}
+          </div>
+        </div>
+        <div class="chat-last-message-container">
+          <div class="urbanist-regular space-between" *ngIf="chat.isChat" [class.bold]="chat.unread_messages > 0">
+            <div class="space-between width-100" *ngIf="chat.notificationType == null">
+              <div>
+                <span *ngIf="chat.lastMessageUserId == id">You: </span>
+                <span class="chat-last-message" [class.bold]="chat.unread_messages > 0"> {{ chat.lastMessage }}</span>
+              </div>
+              <div class="unread-messages center" *ngIf="chat.unread_messages > 0">
+                {{ chat.unread_messages }}
+              </div>
+            </div>
+            <div *ngIf="chat.notificationType != null" class="friendship-established"
+                 [class.bold]="chat.unread_messages > 0">
+              Friendship Established
+            </div>
+          </div>
+          <div class="urbanist-regular space-between width-100" *ngIf="!chat.isChat">
+            <div>
+              <span
+                *ngIf="chat.lastMessageUserId != id && chat.lastMessage != null && chat.notificationType == null">{{ chat.lastMessageUser }}
+                : </span>
+              <span *ngIf="chat.lastMessageUserId == id && chat.notificationType == null">You:</span> <span
+              class="chat-last-message" [class.bold]="chat.unread_messages > 0"
+              *ngIf="chat.notificationType == null"> {{ chat.lastMessage }}</span>
+              <span class="chat-last-message" [class.bold]="chat.unread_messages > 0" *ngIf="chat.notificationType == 'GROUP_LEFT'"><span class="red">{{ chat.lastMessage }}</span> left chat</span>
+              <span class="chat-last-message" [class.bold]="chat.unread_messages > 0" *ngIf="chat.notificationType == 'GROUP_KICKED'"><span class="bold orange">{{ chat.lastMessage }}</span> was kicked out</span>
+              <span class="chat-last-message" [class.bold]="chat.unread_messages > 0" *ngIf="chat.notificationType == 'GROUP_ADDED'"><span class="bold green">{{ chat.lastMessage }}</span> joined chat</span>
+              <span class="chat-last-message" [class.bold]="chat.unread_messages > 0" *ngIf="chat.notificationType == 'GROUP_CREATED'"><span class="bold blue">{{ chat.lastMessageUser }}</span> created chat</span>
+            </div>
+            <div class="unread-messages center" *ngIf="chat.unread_messages > 0">
+              {{ chat.unread_messages }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>
+<div class="chat-window">
+  <div class="chat-header">
+    <div class="chat-photo-background">
+      <img [src]="getChatPhoto(chat)" [ngStyle]="{'background-color': getChatBackground(chat)}" width="60px" height="60px" class="round-100">
+    </div>
+    <div class="chat-header-inner">
+      <div class="chat-header-inner-2">
+        <div class="urbanist-regular chat-selected-name">
+          {{ chat?.name }}
+        </div>
+        <div class="chat-selected-status urbanist-regular">
+          <ng-container *ngIf="chat && chat.onlineUsers > 1; else offline">
+            <span class="status-online">Online</span>
+            <span *ngIf="!chat?.duo && chat">
+              <ng-container *ngFor="let onlineUser of getOnlineUsersInChat(); let i = index">
+                <img [src]="userPhotos.get(onlineUser.id)" [ngStyle]="{ 'background-color': onlineUser.bgColor, 'left': i*17+54+'px' }" height="25px" class="user-online">
+              </ng-container>
+            </span>
+          </ng-container>
+          <ng-template #offline>
+            <span class="offline">OFFLINE</span>
+          </ng-template>
+        </div>
+      </div>
+      <div class="chat-selected-privilege">
+        <img src="../../assets/img/icon-info.png" width="40px" height="40px" *ngIf="chat?.role == 'USER'">
+        <img src="../../assets/img/icon-crown.png" width="28px" height="28px" *ngIf="chat?.role == 'OWNER'">
+      </div>
+    </div>
+  </div>
+
+  <div class="messages-chat-window example" #customScroll [scrollTop]="customScroll.scrollHeight">
+
+    <ng-container *ngFor="let message of messages; let i = index; let b = first;">
+
+      <div class="width-100"></div>
+
+      <div *ngIf="isFirstMessageOfDay(message, i)" class="urbanist-regular first-message">
+        <hr class="first-message-line">
+        {{ getDay(message.dateTime) }}
+        <hr class="first-message-line">
+      </div>
+
+      <div class="urbanist-regular new-messages-header"
+           *ngIf="unread_messages_selected_chat > 0 && unread_messages_selected_chat == messages.length - i ">
+        <hr class="new-message-line">
+        New messages
+        <hr class="new-message-line">
+      </div>
+
+      <div *ngIf="message.notification_type == 'GROUP_CREATED' && chat?.duo">
+
+        <div class="urbanist-regular new-messages-header">
+          <hr class="chat-create-line flex-1">
+          <div class="new-message-data">
+            <img [src]="getUserPhoto(0)" class="round-100" height="30px">
+            <span class="handshake-container">
+              <img src="../../assets/img/icon-handshake-black.png" height="25px">
+            </span>
+            <img [src]="getUserPhoto(1)" class="round-100" height="30px">
+          </div>
+          <hr class="chat-create-line flex-1">
+        </div>
+
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div *ngIf="message.notification_type == 'GROUP_CREATED' && !chat?.duo">
+
+        <div class="urbanist-regular new-messages-header">
+          <hr class="chat-create-line flex-1">
+          <div class="new-message-data">
+            <img [src]="userPhotos.get(message.userId)" class="round-100 bg-gray" height="30px">
+            <span class="new-message-content blue">
+              {{ message.firstName }} {{ message.lastName }}  </span>
+            <span class="gray new-message-description">
+               created chat with {{ message.content }}
+              <span class="black">{{ message.dateTime | dateTimeDisplay }}</span>
+            </span>
+          </div>
+          <hr class="chat-create-line flex-1">
+        </div>
+
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div *ngIf="message.notification_type == 'GROUP_ADDED'">
+
+        <div class="urbanist-regular new-messages-header">
+          <hr class="user-joined-line flex-1">
+          <div class="new-message-data">
+            <img [src]="userPhotos.get(message.userId)" class="round-100 bg-green" height="30px">
+            <span class="new-message-content green">
+                {{ message.content }}  </span>
+            <span class="gray new-message-description">
+                 has been added
+              <span class="black">{{ message.dateTime | dateTimeDisplay }}</span>
+            </span>
+          </div>
+          <hr class="user-joined-line flex-1">
+        </div>
+
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div *ngIf="message.notification_type == 'GROUP_KICKED'">
+        <div class="urbanist-regular new-messages-header new-messages-header-margin">
+
+          <hr class="user-kicked-line flex-1">
+          <div class="new-message-data">
+            <img [src]="userPhotos.get(message.userId)" class="round-100 bg-orange" height="30px">
+            <span class="new-message-content orange">
+              {{ message.content }}  </span>
+            <span class="gray new-message-description">
+               has been removed
+            <span class="black">{{ message.dateTime | dateTimeDisplay }}</span>
+          </span>
+          </div>
+          <hr class="user-kicked-line flex-1">
+        </div>
+
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div *ngIf="message.notification_type == 'GROUP_LEFT'">
+        <div class="urbanist-regular new-messages-header">
+          <hr class="user-left-line flex-1">
+          <div class="new-message-data">
+            <img [src]="userPhotos.get(message.userId)" class="round-100 bg-red" height="30px">
+            <span class="red new-message-content">
+              {{ message.content }}  </span>
+            <span class="gray new-message-description">
+               has left
+            <span class="black">{{ message.dateTime | dateTimeDisplay }}</span>
+          </span>
+          </div>
+          <hr class="user-left-line flex-1">
+        </div>
+
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="message-container" *ngIf="id!==message.userId && message.photo && message.id != 0">
+        <div class="groupUserMessage">
+          <div class="center groupUserPhoto">
+            <img [src]="userPhotos.get(message.userId)" height="40px" class="round-100">
+          </div>
+          <div class="urbanist-regular message-author">
+            {{ message.firstName }} {{ message.lastName }}
+            <span class="message-date">{{ message.dateTime | dateTimeDisplay }}</span>
+          </div>
+          <div class="urbanist-regular normal-message-content">
+            <span *ngIf="!message.deleted"><img [src]="filesPhotos.get(message.id)"></span>
+            <span *ngIf="message.deleted" class="message-deleted">Message deleted</span>
+          </div>
+        </div>
+        <div class="message-actions">
+          <div class="center response-create-container" (click)="createResponse(message)">
+            <img src="../../assets/img/icon-email-send.png" width="22px" height="22px">
+          </div>
+        </div>
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="message-container2" *ngIf="id===message.userId && message.photo && message.notification_type == null">
+        <div class="userMessage">
+          <div class="center userPhoto">
+            <img [src]="userPhotos.get(message.userId)" height="40px" class="round-100">
+          </div>
+          <div class="urbanist-regular message-container3">
+            <span class="message-date2">{{ message.dateTime | dateTimeDisplay }}</span>
+            You
+          </div>
+
+          <div class="urbanist-regular message-content">
+            <span *ngIf="!message.deleted"><img [src]="filesPhotos.get(message.id)"></span>
+            <span *ngIf="message.deleted" class="message-deleted">Message deleted</span>
+          </div>
+        </div>
+        <div class="message-actions2">
+          <div class="center delete-message-container">
+            <img src="../../assets/img/icon-high-importance.png" width="22px" height="22px"
+                 (click)="removeMessage(message)" *ngIf="!message.deleted">
+          </div>
+        </div>
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="message-container"
+           *ngIf="id!==message.userId && message.response_id === null && message.notification_type == null && !message.photo">
+        <div class="groupUserMessage">
+          <div class="center groupUserPhoto">
+            <img [src]="userPhotos.get(message.userId)" height="40px" class="round-100">
+          </div>
+          <div class="urbanist-regular message-author">
+            {{ message.firstName }} {{ message.lastName }}
+            <span class="message-date">{{ message.dateTime | dateTimeDisplay }}</span>
+          </div>
+          <div class="urbanist-regular normal-message-content">
+            <span *ngIf="!message.deleted">{{ message.content }}</span>
+            <span *ngIf="message.deleted" class="message-deleted">Message deleted</span>
+          </div>
+        </div>
+        <div class="message-actions">
+          <div class="center response-create-container" (click)="createResponse(message)">
+            <img src="../../assets/img/icon-email-send.png" width="22px" height="22px">
+          </div>
+        </div>
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="message-container"
+           *ngIf="id!==message.userId && message.response_id !== null && !message.photo && message.notification_type == null">
+        <div class="groupUserMessage">
+          <div class="center groupUserPhoto">
+            <img [src]="userPhotos.get(message.userId)" height="40px" class="round-100">
+          </div>
+          <div class="urbanist-regular message-author">
+            <span style="float: left">{{ message.firstName }} {{ message.lastName }}</span>
+            <span class="message-date3" style="float: left">{{ message.dateTime | dateTimeDisplay }}</span>
+            <span class="response-date3" style="float: left">{{ message.response_dateTime | dateTimeDisplay }}</span>
+          </div>
+
+          <div class="response-container2">
+            <div class="urbanist-regular message-response-author">
+              {{ message.response_firstName }} {{ message.response_lastName }}:
+              <span *ngIf="!message.response_deleted" class="response-content"> {{ message.response_content }}</span>
+              <span *ngIf="message.response_deleted" class="response-content message-deleted"> Message deleted</span>
+            </div>
+            <div class="urbanist-regular response-message-content">
+              <span *ngIf="!message.deleted">{{ message.content }}</span>
+              <span *ngIf="message.deleted" class="message-deleted">Message deleted</span>
+            </div>
+          </div>
+        </div>
+        <div class="message-actions">
+          <div class="center response-create-container" (click)="createResponse(message)">
+            <img src="../../assets/img/icon-email-send.png" width="22px" height="22px">
+          </div>
+        </div>
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="message-container2"
+           *ngIf="id===message.userId && message.response_id === null && !message.photo && message.notification_type == null">
+        <div class="userMessage">
+          <div class="center userPhoto">
+            <img [src]="userPhotos.get(message.userId)" height="40px" class="round-100">
+          </div>
+          <div class="urbanist-regular message-container3">
+            <span class="message-date2">{{ message.dateTime | dateTimeDisplay }}</span>
+            You
+          </div>
+          <div class="urbanist-regular message-content">
+            <span *ngIf="!message.deleted">{{ message.content }}</span>
+            <span *ngIf="message.deleted" class="message-deleted">Message deleted</span>
+          </div>
+        </div>
+        <div class="message-actions2">
+          <div class="center delete-message-container">
+            <img src="../../assets/img/icon-high-importance.png" width="22px" height="22px" (click)="removeMessage(message)" *ngIf="!message.deleted">
+          </div>
+        </div>
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="message-container2"
+           *ngIf="id===message.userId && message.response_id !== null && !message.photo && message.notification_type == null">
+        <div class="userMessage">
+
+          <div class="center userPhoto">
+            <img [src]="userPhotos.get(message.userId)" height="40px" class="round-100">
+          </div>
+
+          <div class="urbanist-regular message-container4">
+            <span class="message-date2"><span
+              class="response-date2">{{ message.response_dateTime | dateTimeDisplay }}</span> {{ message.dateTime | dateTimeDisplay }}</span>
+            You
+          </div>
+          <div class="message-response">
+            <div class="urbanist-regular message-response-data">
+              {{ message.response_firstName }} {{ message.response_lastName }}:
+              <span *ngIf="!message.response_deleted" class="response-content">{{ message.response_content }}</span>
+              <span *ngIf="message.response_deleted" class="response-content message-deleted">Message deleted</span>
+            </div>
+            <div class="urbanist-regular response-message-content">
+              <span *ngIf="!message.deleted">{{ message.content }}</span>
+              <span *ngIf="message.deleted" class="message-deleted">Message deleted</span>
+            </div>
+          </div>
+
+        </div>
+        <div class="message-actions2">
+          <div class="center delete-message-container">
+            <img src="../../assets/img/icon-high-importance.png" width="22px" height="22px"
+                 (click)="removeMessage(message)">
+          </div>
+        </div>
+        <div class="chat-users-read" *ngIf="message.ids.length > 0">
+          <ng-container *ngFor="let id of message.ids">
+            <img [src]="userPhotos.get(id)" height="30px" class="message-author2">
+          </ng-container>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+  <div class="create-message-outer">
+
+    <div class="response-container urbanist-regular" *ngIf="response !== undefined" (click)="response = undefined">
+      <div class="response-data">
+        {{ response?.firstName }} {{ response?.lastName }}: {{ response?.content }}
+      </div>
+      <div class="center response-date" *ngIf="response?.dateTime">
+        {{ response.dateTime | dateTimeDisplay }}
+      </div>
+    </div>
+
+    <div class="create-message-container">
+      <div class="center attachment-container">
+        <input type="file" style="display: none" id="group_photo" name="file" (change)="onFileSelected($event)"
+               ngModel/>
+        <label for="group_photo" class="pointer">
+          <img src="../../assets/img/icon-attachment.png" height="35px">
+        </label>
+      </div>
+      <input type="text" placeholder="Type a message " [(ngModel)]="messageInput" (keyup.enter)="sendMessage($event)"
+             class="urbanist-regular create-message-input">
+      <div class="center send-button">
+        <img src="../../assets/img/icon-sent.png" height="32px" (click)="sendMessage($event)">
+      </div>
+    </div>
+
+
+  </div>
+</div>
+<div class="example chat-details">
+  <div class="chat-details-header urbanist-regular">
+    Details
+  </div>
+  <div class="chat-details-content">
+    <ng-container *ngIf="chat">
+      <div class="chat-details-background" [ngStyle]="{'background-color': getChatBackground(chat)}" *ngIf="chat.duo">
+        <img [src]="getChatPhoto(chat)" height="180px" class="chat-details-photo">
+      </div>
+
+      <div class="chat-group-details-background center" *ngIf="!chat.duo">
+        <img [src]="getChatPhoto(chat)" height="190px" class="chat-group-details-photo">
+      </div>
+    </ng-container>
+
+    <div class="open-sans-regular chat-details-name">
+      {{ chat?.name }}
+    </div>
+    <div class="poppins-medium chat-details-online">
+      Online
+    </div>
+
+    <div class="example chat-details-list">
+
+      <div class="urbanist-regular chat-detail-header members-list">
+        <div class="members-list-inner">
+          <div class="switch-button">
+            <div class="members center" [class.active]="!addUsers" (click)="addUsers=false">
+              Members
+            </div>
+            <div class="add-users center" [class.active]="addUsers" (click)="addUsers=true"
+                 *ngIf="chat?.role === 'OWNER'">
+              Add
+            </div>
+          </div>
+          <div>
+
+            <ng-container *ngIf="chat">
+              <ng-container *ngFor="let user of chat.users.slice(0, 3); let i = index">
+                <div class="chat-user-photo-container-2" [style.background-color]="user.bgColor" *ngIf="i==2">
+                  <img [src]="userPhotos.get(user.id)" height="35px" class="round-100">
+                </div>
+                <div class="chat-user-photo-container-1" [style.background-color]="user.bgColor" *ngIf="i==1">
+                  <img [src]="userPhotos.get(user.id)" height="35px" class="round-100">
+                </div>
+                <div class="chat-user-photo-container-0" [style.background-color]="user.bgColor" *ngIf="i==0">
+                  <img [src]="userPhotos.get(user.id)" height="35px" class="round-100">
+                </div>
+              </ng-container>
+
+              <div *ngIf="chat?.users && chat.users.length > 3" class="center urbanist-regular users-list-excess">
+                +{{ chat.users.length - 3 }}
+              </div>
+            </ng-container>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-users">
+        <div [hidden]="addUsers">
+          <ng-container *ngFor="let user of chat?.users; let i = last">
+            <div class="chat-user">
+              <div class="chat-user-personal-data">
+                <div class="chat-user-photo-container">
+                  <div [ngClass]="{'gClass': chat?.role === 'OWNER', 'center': true}" class="user-photo-container gClass" [style.background-color]="user.bgColor" *ngIf="chat?.role !== 'OWNER' && user.id !== id">
+                    <img [src]="userPhotos.get(user.id)" height="45px" class="chat-user-photo">
+                  </div>
+                  <div [ngClass]="{'gClass': chat?.role === 'OWNER', 'center': true}" class="user-photo-container gClass" [style.background-color]="user.bgColor" *ngIf="chat?.role === 'OWNER' && user.id !== id">
+                    <img [src]="userPhotos.get(user.id)" height="45px" class="chat-user-photo">
+                    <img class="remove-icon" src="../../assets/img/icon-remove.png" height="25px" (click)="removeUserFromChat(user)">
+                  </div>
+                  <div class="user-photo-container center" [style.background-color]="user.bgColor" *ngIf="user.id === id">
+                    <img [src]="userPhotos.get(user.id)" height="45px" class="chat-user-photo">
+                  </div>
+                  <div class="chat-user-status" *ngIf="user.userStatus == 'ONLINE'"></div>
+                </div>
+                <div class="urbanist-regular chat-user-data">
+                  <div class="chat-user-name">{{ user.firstName }} {{ user.lastName }}</div>
+                  <div class="chat-user-details" *ngIf="user.id != id">
+                    {{ user.messages }} <span class="gray">Messages, {{ user.mutualFriends }} Mutual Friends</span>
+                  </div>
+                  <div class="chat-user-details" *ngIf="user.id == id">{{ user.messages }}<span class="gray"> Messages</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="center urbanist-regular chat-user-small-button" *ngIf="user.id == id">
+                You
+              </div>
+              <ng-container *ngIf="!chat?.duo">
+
+                <div class="center chat-user-small-button" *ngIf="user.friendStatus == null && user.id != id" (click)="createFriendRequest(user.id)">
+                  <div class="center chat-user-add">
+                    <img src="../../assets/img/icon-add-user-blue.png" height="30px" width="30px">
+                  </div>
+                </div>
+
+                <div class="center urbanist-regular chat-user-big-button" *ngIf="user.friendStatus == 'TO_ACCEPT'"
+                     (click)="acceptFriendRequest(user.id)">
+                  <img src="../../assets/img/icon-double-check.png" width="25px">
+                  <span class="chat-user-accept">Accept</span>
+                </div>
+
+                <div class="center urbanist-regular chat-user-big-button" *ngIf="user.friendStatus == 'PENDING'">
+                  <img src="assets/img/icon-check.png" width="30px">
+                  <span class="chat-user-pending">Invited</span>
+                </div>
+
+                <div class="user-actions-list" *ngIf="user.friendStatus == 'ACCEPTED'">
+                  <div class="center urbanist-regular chat-user-small-button" (click)="removeFriend(user.id)">
+                    <div class="center chat-remove-user">
+                      <img src="../../assets/img/icon-delete-user.png" height="25px">
+                    </div>
+                  </div>
+
+                  <div class="center urbanist-regular chat-user-small-button" (click)="selectChatByUserId(user.id)">
+                    <div class="center chat-message-user">
+                      <img src="../../assets/img/icon-letter-blue.png" height="25px">
+                    </div>
+                  </div>
+                </div>
+
+
+              </ng-container>
+
+            </div>
+          </ng-container>
+        </div>
+
+        <div [hidden]="!addUsers">
+          <ng-container *ngFor="let friend of friends; let i = last">
+            <div class="chat-user">
+              <div class="chat-user-personal-data">
+                <div class="chat-user-photo-container">
+                  <div [ngClass]="{'gClass': chat?.role === 'OWNER', 'center': true}" class="user-photo-container" [style.background-color]="friend.bgColor">
+                    <img [src]="userPhotos.get(friend.id)" height="45px" class="chat-user-photo">
+                    <img class="remove-icon" src="../../assets/img/icon-plus-grey.png" height="20px" (click)="addUserToChat(friend)" *ngIf="chat?.role === 'OWNER'">
+                  </div>
+                  <div class="chat-user-status" *ngIf="friend.activityStatus === 'ONLINE'"></div>
+                </div>
+                <div class="urbanist-regular chat-user-data">
+                  <div class="chat-user-name">{{ friend.first_name }} {{ friend.last_name }}</div>
+                  <div class="chat-user-details">
+                    <span class="gray">Mutual Groups</span> {{ friend.mutualGroups }}<span class="gray">, Friends </span>{{ friend.mutualFriends }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="urbanist-regular chat-detail-header">
+        <div class="timeline-header">
+          Timeline
+          <img src="../../assets/img/icon-info.png" height="25px">
+        </div>
+      </div>
+      <div class="timeline-data">
+        <div class="notification-container">
+          <div class="bg-gray-2 notification-dot center">
+            <img src="assets/img/icon-group.png" height="21px" *ngIf="!chat?.duo">
+            <img src="../../assets/img/icon-handshake-white.png" height="21px" *ngIf="chat?.duo">
+          </div>
+          <span class="chat-created urbanist-regular" *ngIf="chat?.created">
+            {{ chat?.created | dateTime2Display }}
+          </span>
+        </div>
+        <div class="notification-container-large">
+          <div class="custom-line custom-line-1"></div>
+          <div class="custom-line custom-line-2"></div>
+          <div class="custom-line custom-line-3"></div>
+          <div class="custom-line custom-line-4"></div>
+
+          <div class="chat-created-content urbanist-regular">
+            <span *ngIf="groupNotifications[0] && !chat?.duo" class="hideText">
+              <span class="f-w-600 blue">{{ groupNotifications[0].firstName }} {{ groupNotifications[0].lastName }}</span> created chat with <span class="black">{{ groupNotifications[0].content }}</span>
+            </span>
+            <span *ngIf="chat?.duo" class="hideText">
+              <span class="black f-w-600">The beginning date of the friendship.</span>
+            </span>
+          </div>
+        </div>
+        <ng-container *ngFor="let notification of groupNotifications.slice(0)">
+
+          <ng-container *ngIf="notification.notification_type == 'GROUP_ADDED'">
+            <div class="notification-container">
+              <div class="notification-dot bg-green center">
+                <img [src]="userPhotos.get(notification.userId)" height="25px" class="round-100">
+              </div>
+              <span class="notification-date urbanist-regular">
+                {{ notification.dateTime | dateTime2Display }}
+              </span>
+            </div>
+            <div class="notification-container">
+              <div class="notification-line bg-green"></div>
+
+              <span class="notification-content urbanist-regular">
+                <span class="green f-w-600">{{ notification.content }}</span> has been added
+              </span>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="notification.notification_type == 'GROUP_KICKED'">
+
+            <div class="notification-container">
+              <div class="notification-dot bg-orange center">
+                <img [src]="userPhotos.get(notification.userId)" height="25px" class="round-100">
+              </div>
+              <span class="notification-date urbanist-regular">
+                {{ notification.dateTime | dateTime2Display }}
+              </span>
+            </div>
+            <div class="notification-container">
+              <div class="notification-line bg-orange"></div>
+              <span class="notification-content urbanist-regular">
+                <span class="orange f-w-600">{{ notification.content }}</span> has been removed
+              </span>
+            </div>
+
+          </ng-container>
+
+          <ng-container *ngIf="notification.notification_type == 'GROUP_LEFT'">
+
+            <div class="notification-container">
+              <div class="notification-dot bg-red center">
+                <img [src]="userPhotos.get(notification.userId)" height="25px" class="round-100">
+              </div>
+              <span class="notification-date urbanist-regular">
+                {{ notification.dateTime | dateTime2Display }}
+              </span>
+            </div>
+            <div class="notification-container">
+              <div class="notification-line bg-red"></div>
+              <span class="notification-content urbanist-regular">
+                {{ notification.content }} has left
+              </span>
+            </div>
+
+          </ng-container>
+
+        </ng-container>
+
+        <div class="messages-sent-notification">
+          <div class="notification-dot center">
+            <img src="../../assets/img/icon-message.png" height="17px">
+          </div>
+          <span class="messages-sent-content urbanist-regular">
+              Number of messages sent: {{ messages.length }}
+            </span>
+        </div>
+      </div>
+
+      <div class="urbanist-regular chat-detail-header">
+        <div class="media-header">
+          Media
+          <span class="f-w-600">{{ files.length }}</span>
+        </div>
+      </div>
+        <div class="files-list-container" [ngStyle]="{ 'margin': files.length > 0 ? '20px' : '' }">
+          <ng-container *ngFor="let file of files | slice: 0 : 5">
+            <div class="file-photo-container" data-toggle="tooltip" data-html="true" data-placement="left" title="Sent: {{ file.sent | dateTimeDisplay }}, By: {{ file.firstName }} {{ file.lastName }}">
+              <img [src]="filesPhotos.get(file.id)" class="file-photo">
+            </div>
+          </ng-container>
+          <div class="files-list-excess urbanist-regular" *ngIf="files.length > 5 && !allMedia" (click)="showAllMedia()">
+            <div>
+              <span class="f-s-20">{{ files.length - 5 }}+</span><br>More Media
+            </div>
+          </div>
+          <ng-container *ngIf="allMedia">
+            <ng-container *ngFor="let file of files | slice: 5">
+              <div class="file-photo-container" data-toggle="tooltip" data-html="true" data-placement="left" title="Sent: {{ file.sent | dateTimeDisplay }}, By: {{ file.firstName }} {{ file.lastName }}">
+                <img [src]="filesPhotos.get(file.id)" class="file-photo">
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+
+    </div>
+
+  </div>
+  <div class="chat-action-container">
+    <div *ngIf="!chat?.duo && chat?.role != 'OWNER'" class="center chat-action urbanist-regular" (click)="leaveChat()">
+      Quit Group
+    </div>
+    <div *ngIf="!chat?.duo && chat?.role === 'OWNER'" class="center chat-action urbanist-regular"
+         (click)="removeChat()">
+      Remove Group
+    </div>
+    <div *ngIf="chat?.duo" class="center chat-action urbanist-regular" (click)="removeChat()">
+      Quit Group And Unfriend
+    </div>
+  </div>
+</div>

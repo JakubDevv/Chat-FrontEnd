@@ -1,0 +1,150 @@
+<div class="nav-bar">
+  <div class="logo-container urbanist-regular">
+    Chat
+    <div class="logo-detail"></div>
+  </div>
+  <div class="nav-bar-urls">
+    <div [routerLink]="['/dashboard']" routerLinkActive="active-link" class="elem center noto-sans-jp-mid">
+      Dashboard
+    </div>
+    <div [routerLink]="['/chat']" routerLinkActive="active-link" class="elem center noto-sans-jp-mid">
+      Chat
+    </div>
+    <div [routerLink]="['/friends']" routerLinkActive="active-link" class="elem center noto-sans-jp-mid">
+      Friends
+    </div>
+  </div>
+  <div class="nav-bar-right-side">
+    <div class="notification-button center" (click)="openNotifications()">
+      <img src="../../assets/img/icon-bell.png" width="25px" height="25px">
+    </div>
+    <div class="notifications-amount center urbanist-regular">
+      {{ notifications.length }}
+    </div>
+    <div class="notifications filter-container" [ngClass]="{ opened: notification }">
+      <div class="notifications-header urbanist-regular">
+        Notifications
+        <img src="assets/img/icon-x.png" height="25px" (click)="notification = false" style="cursor: pointer;">
+      </div>
+      <div class="notification-types-container" *ngIf="notifications.length > 0">
+        <div class="notification-types">
+          <div class="notification-type-container center urbanist-regular" [class.notification-type-selected-container]="notificationType === 'ALL'" (click)="filterNotifications('ALL')">
+            All
+          </div>
+
+          <div class="notification-type-container center urbanist-regular" [class.notification-type-selected-container]="notificationType === 'FRIENDS'" (click)="filterNotifications('FRIENDS')">
+            Friends
+          </div>
+
+          <div class="notification-type-container center urbanist-regular" [class.notification-type-selected-container]="notificationType === 'CHATS'" (click)="filterNotifications('CHATS')">
+            Chats
+          </div>
+        </div>
+      </div>
+
+      <div class="notification-list example">
+
+      <ng-container *ngFor="let notificationn of notifications">
+
+        <ng-container *ngIf="notificationType == 'ALL' || notificationType == 'CHATS'">
+          <div class="notification-container urbanist-regular" *ngIf="notificationn.notificationType == 'GROUP_KICKED'">
+            <div class="notification-user-photo center">
+              <img [src]="userPhotos.get(notificationn.user_id)" height="60px">
+            </div>
+            <div class="notification-data">
+              <div class="notification-main-data-container">
+                <span class="notification-main-data">{{ notificationn.user_firstName }} {{ notificationn.user_lastName }} <span class="notification-type">removed you from the group!</span></span>
+                <img src="assets/img/icon-x.png" height="20px" class="remove-notification" (click)="removeNotification(notificationn.id)">
+              </div>
+              <div class="notification-details">
+                {{ notificationn.group_name }}
+                <div class="dot"></div>
+                <div class="notification-date">{{ notificationn.sentTime | dateTimeDisplay }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="notification-container urbanist-regular" *ngIf="notificationn.notificationType == 'GROUP_ADDED'">
+            <div class="notification-user-photo center">
+              <img [src]="userPhotos.get(notificationn.user_id)" height="60px">
+            </div>
+            <div class="notification-data">
+              <div class="notification-main-data-container">
+                  <span class="notification-main-data" style="float: left">{{ notificationn.user_firstName }} {{ notificationn.user_lastName }} <span class="notification-type">added you to the group!</span></span>
+                  <img src="assets/img/icon-x.png" height="20px" class="remove-notification" (click)="removeNotification(notificationn.id)">
+              </div>
+              <div class="notification-details">
+                {{ notificationn.group_name }}
+                <div class="dot"></div>
+                <div class="notification-date">{{ notificationn.sentTime | dateTimeDisplay }}</div>
+              </div>
+            </div>
+          </div>
+
+        </ng-container>
+
+        <ng-container *ngIf="notificationType == 'ALL' || notificationType == 'FRIENDS'">
+
+          <div class="notification-container urbanist-regular" *ngIf="notificationn.notificationType == 'FRIEND_ACCEPT'">
+            <div class="notification-user-photo center">
+              <img [src]="userPhotos.get(notificationn.user_id)" height="60px">
+            </div>
+            <div class="notification-data">
+              <div class="notification-main-data-container">
+                <span class="notification-main-data" style="float: left">Accepted <span class="notification-type">friend request!</span></span>
+                <img src="assets/img/icon-x.png" class="remove-notification" height="20px" (click)="removeNotification(notificationn.id)">
+              </div>
+              <div class="notification-details">
+                {{ notificationn.user_firstName }} {{ notificationn.user_lastName }} {{ notificationn.group_id }}
+                <div class="dot"></div>
+                <div class="notification-date">{{ notificationn.sentTime | dateTimeDisplay }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="notification-container urbanist-regular" *ngIf="notificationn.notificationType === 'FRIEND_REMOVED'">
+            <div class="notification-user-photo center">
+              <img [src]="userPhotos.get(notificationn.user_id)" height="60px">
+            </div>
+            <div class="notification-data">
+              <div class="notification-main-data-container">
+                <span class="notification-main-data">Removed <span class="notification-type">you from friend list!</span></span>
+                <img src="assets/img/icon-x.png" height="20px" class="remove-notification" (click)="removeNotification(notificationn.id)">
+              </div>
+              <div class="notification-details">
+                {{ notificationn.user_firstName }} {{ notificationn.user_lastName }} {{ notificationn.group_id }}
+                <div class="dot"></div>
+                <div class="notification-date">{{ notificationn.sentTime | dateTimeDisplay }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="notification-container urbanist-regular" *ngIf="notificationn.notificationType === 'FRIEND_REQUEST'">
+            <div class="notification-user-photo center">
+              <img [src]="userPhotos.get(notificationn.user_id)" height="60px">
+            </div>
+            <div class="notification-data">
+              <div class="notification-main-data-container">
+                <span class="notification-main-data">Sent <span class="notification-type">friend request!</span></span>
+                <img src="assets/img/icon-x.png" height="20px" class="remove-notification" (click)="removeNotification(notificationn.id)">
+              </div>
+              <div class="notification-details">
+                {{ notificationn.user_firstName }} {{ notificationn.user_lastName }} {{ notificationn.group_id }}
+                <div class="dot"></div>
+                <div class="notification-date">{{ notificationn.sentTime | dateTimeDisplay }}</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+      </ng-container>
+      </div>
+
+    </div>
+    <div class="user-profile-container center">
+      <div class="user-profile center" [style.background-color]="bgColor2" [routerLink]="['/dashboard']">
+        <img [id]="id" width="60px" height="60px" class="round-100">
+      </div>
+    </div>
+  </div>
+</div>
